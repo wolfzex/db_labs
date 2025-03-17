@@ -1,8 +1,5 @@
 #!/usr/bin/env sh
 
-# abort on errors
-set -e
-
 # build
 npm run docs:build
 
@@ -14,12 +11,14 @@ cd docs/.vuepress/dist
 
 git init
 git add -A
-git commit -m 'deploy'
+git commit -m 'Update to gh-pages'
 
 # if you are deploying to https://<USERNAME>.github.io
 # git push -f git@github.com:boldak/<USERNAME>.github.io.git master
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f https://github.com/edu-db/edu_db_labs master:gh-pages
+git push -f https://github.com/Somnovem/db_labs master:gh-pages
 
 cd -
+
+read -p "Press any key to continue" x
