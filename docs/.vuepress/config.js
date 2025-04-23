@@ -59,7 +59,7 @@ module.exports = {
       path:"/conclusion/"
     }
   ],
-    sidebarDepth: 2,
+    sidebarDepth: 0,
     displayAllHeaders: true, // Default: false
     nav: [
       { text: '🏠 Початок', link: '/' },

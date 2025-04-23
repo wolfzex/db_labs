@@ -21,7 +21,7 @@ module.exports = {
   themeConfig: {
     // logo: './myAvatar.png',
     sidebar: genSideBar('.'),
-    sidebarDepth: 2,
+    sidebarDepth: 0,
     displayAllHeaders: true, // Default: false themeConfig: {
     nav: genNavBarList(),
     lastUpdated: 'Last Updated', // string | boolean
