@@ -10,3 +10,5 @@ const db = new pg.Pool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
 });
+
+export default db;

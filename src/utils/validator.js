@@ -14,3 +14,22 @@ export const validateRequiredContentFields = (data) => {
     throw new AppError('RequiredFieldsMissingException', 400);
   }
 };
+
+export const validateRequiredTagFields = (data) => {
+  const { name } = data;
+  if (!name) {
+    throw new AppError('DataMissingException: Tag name is required.', 400);
+  }
+};
+
+export const validateRequiredSourceFields = (data) => {
+  const { name, url } = data;
+  if (!name || !url) {
+    throw new AppError('DataMissingException: Source name and URL are required.', 400);
+  }
+  try {
+    new URL(url);
+  } catch (_) {
+    throw new AppError('InvalidDataException: Invalid URL format.', 400);
+  }
+};
