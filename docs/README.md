@@ -3,7 +3,7 @@ home: true
 actionText: Розпочати
 actionLink: /intro/
 
-footer: "MIT Licensed | Copyright © [2025] [Somnovem]"
+footer: "MIT Licensed | Copyright © [2025] [wolfzex]"
 ---
 
 ## ✍️ Автор
