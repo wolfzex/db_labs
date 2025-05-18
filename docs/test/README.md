@@ -4,64 +4,69 @@
 
 ## Запуск сервера
 
-<img src="./media/start.png" alt="server successfully started">
+<img src="./media/server.png" alt="Сервер успішно запущено">
 
-## POST api/user
+## Тестування модуля Tag
 
-<img src="./media/post-user.png" alt="user successfully created">
+### POST /api/tag - Створення тегу
 
-## GET api/user
+<img src="./media/postTag.png" alt="Успішне створення нового тегу">
 
-<img src="./media/get-users.png" alt="successfully returned a list of users">
+### GET /api/tag - Отримання списку всіх тегів
 
-## GET api/user/:id
+<img src="./media/getTag.png" alt="Успішне отримання списку всіх тегів">
 
-<img src="./media/get-user.png" alt="successfully returned a user based on id">
+### GET /api/tag/:id - Отримання тегу за ідентифікатором
 
-## PATCH api/user/:id
+<img src="./media/getTagById.png" alt="Успішне отримання тегу за його ID">
 
-<img src="./media/patch-user.png" alt="successfully updated user's info">
+### PATCH /api/tag/:id - Оновлення інформації про тег
 
-## DELETE api/user/:id
+<img src="./media/patchTag.png" alt="Успішне оновлення інформації існуючого тегу">
 
-<img src="./media/delete-user.png" alt="successfully deleted a user">
+### DELETE /api/tag/:id - Видалення тегу
 
-## POST api/content
+<img src="./media/deleteTag.png" alt="Успішне видалення тегу">
 
-<img src="./media/post-content.png" alt="successfully created content">
+## Тестування модуля Source
 
-## GET api/content
+### POST /api/source - Створення джерела
 
-<img src="./media/get-contents.png" alt="successfully returned a list of contents">
+<img src="./media/postSource.png" alt="Успішне створення нового джерела">
 
-## GET api/content/:id
+### GET /api/source - Отримання списку всіх джерел
 
-<img src="./media/get-content.png" alt="successfully returned a content based on id">
+<img src="./media/getSource.png" alt="Успішне отримання списку всіх джерел">
 
-## PATCH api/content/:id
+### GET /api/source/:id - Отримання джерела за ідентифікатором
 
-<img src="./media/patch-content.png" alt="successfully updated content's info">
+<img src="./media/getSourceById.png" alt="Успішне отримання джерела за його ID">
 
-## DELETE api/content/:id
+### PATCH /api/source/:id - Оновлення інформації про джерело
 
-<img src="./media/delete-content.png" alt="successfully deleted a content">
+<img src="./media/patchSource.png" alt="Успішне оновлення інформації існуючого джерела">
 
-## EXCEPTION(User): DataMissingException
+### DELETE /api/source/:id - Видалення джерела
 
-<img src="./media/user-DataMissingException.png" alt="DataMissingException returned from a bad request">
+<img src="./media/deleteSource.png" alt="Успішне видалення джерела">
 
-## EXCEPTION(User): AlreadyRegisteredException
+## Тестування обробки винятків
 
-<img src="./media/user-AlreadyRegisteredException.png" alt="AlreadyRegisteredException returned from a repeated data">
+### EXCEPTION(Tag): DataMissingException (Відсутні обов'язкові дані при створенні тегу)
 
-## EXCEPTION(User): UserNotFoundException
+<img src="./media/dataMissingExceptionTag.png" alt="Помилка: Відсутні дані для створення тегу">
 
-<img src="./media/user-UserNotFoundException.png" alt="UserNotFoundException returned from wrong ID provided">
+### EXCEPTION(Tag): TagNotFoundException (Тег не знайдено при запиті/оновленні)
 
-## EXCEPTION(MediaContent): RequiredFieldsMissingException
+<img src="./media/tagNotFoundException.png" alt="Помилка: Тег з вказаним ID не знайдено (GET/PATCH)">
 
-<img src="./media/content-RequiredFieldsMissingException.png" alt="RequiredFieldsMissingException returned from not providing enough required fields">
+### EXCEPTION(Tag): TagNotFoundException (Тег не знайдено при оновленні)
+<img src="./media/tagNotFoundExceptionUpdate.png" alt="Помилка: Тег з вказаним ID не знайдено для оновлення">
 
-## EXCEPTION(MediaContent): MediaContentNotFoundException
+### EXCEPTION(Source): SourceNotFoundException (Джерело не знайдено при запиті/оновленні)
 
-<img src="./media/content-MediaContentNotFoundException.png" alt="MediaContentNotFoundException returned from wrong ID provided">
+<img src="./media/sourceNotFoundException.png" alt="Помилка: Джерело з вказаним ID не знайдено (GET/PATCH)">
+
+### EXCEPTION(Source): SourceNotFoundException (Джерело не знайдено при видаленні)
+
+<img src="./media/sourceNotFoundExceptionDelete.png" alt="Помилка: Джерело з вказаним ID не знайдено для видалення">

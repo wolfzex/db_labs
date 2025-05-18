@@ -171,38 +171,38 @@ VALUES (1, 'access.reports'),
        (5, 'media.edit'),
        (6, 'media.remove');
 
-INSERT INTO Tag (id, name)
-VALUES (1, 'Biology'),
-       (2, 'AI & Robotics'),
-       (3, 'Nutrition'),
-       (4, 'Adventure'),
-       (5, 'Climate'),
-       (6, 'Astrophysics'),
-       (7, 'Blockchain'),
-       (8, 'Green Tech'),
-       (9, 'eSports'),
-       (10, 'Pharmaceuticals'),
-       (11, 'Trend Analysis'),
-       (12, 'User Sentiment'),
-       (13, 'New Product'),
-       (14, 'Sales Trends'),
-       (15, 'Team Feedback'),
-       (16, 'Influencer Reach'),
-       (17, 'Competitive Review'),
-       (18, 'Fleet Management'),
-       (19, 'UX Research');
+INSERT INTO Tag (name)
+VALUES ('Biology'),
+       ('AI & Robotics'),
+       ('Nutrition'),
+       ('Adventure'),
+       ('Climate'),
+       ('Astrophysics'),
+       ('Blockchain'),
+       ('Green Tech'),
+       ('eSports'),
+       ('Pharmaceuticals'),
+       ('Trend Analysis'),
+       ('User Sentiment'),
+       ('New Product'),
+       ('Sales Trends'),
+       ('Team Feedback'),
+       ('Influencer Reach'),
+       ('Competitive Review'),
+       ('Fleet Management'),
+       ('UX Research');
 
-INSERT INTO Source (id, name, url)
-VALUES (1, 'BBC Earth', 'https://www.bbcearth.com'),
-       (2, 'Wired', 'https://www.wired.com'),
-       (3, 'ESA', 'https://www.esa.int'),
-       (4, 'WebMD', 'https://www.webmd.com'),
-       (5, 'Scientific American', 'https://www.scientificamerican.com'),
-       (6, 'Lonely Planet', 'https://www.lonelyplanet.com'),
-       (7, 'Vimeo', 'https://vimeo.com'),
-       (8, 'IGN', 'https://www.ign.com'),
-       (9, 'Xbox Wire', 'https://news.xbox.com'),
-       (10, 'HealthTech Weekly', 'https://www.healthtechweekly.com');
+INSERT INTO Source (name, url)
+VALUES ('BBC Earth', 'https://www.bbcearth.com'),
+       ('Wired', 'https://www.wired.com'),
+       ('ESA', 'https://www.esa.int'),
+       ('WebMD', 'https://www.webmd.com'),
+       ('Scientific American', 'https://www.scientificamerican.com'),
+       ('Lonely Planet', 'https://www.lonelyplanet.com'),
+       ('Vimeo', 'https://vimeo.com'),
+       ('IGN', 'https://www.ign.com'),
+       ('Xbox Wire', 'https://news.xbox.com'),
+       ('HealthTech Weekly', 'https://www.healthtechweekly.com');
 
 INSERT INTO MediaContent (id, title, description, body, content_type, created_at, profile_id)
 VALUES (1, 'Deep Sea Creatures', 'Rare and fascinating sea animals in their natural habitat.',
@@ -434,8 +434,10 @@ export default db;
 ### App модуль та сервер
 ```js
 import express from 'express';
-import userRouter from '../routers/userRouter.js';
-import mediaContentRouter from '../routers/mediaContentRouter.js';
+import userRouter from './routers/userRouter.js';
+import mediaContentRouter from './routers/mediaContentRouter.js';
+import tagRouter from './routers/tagRouter.js';
+import sourceRouter from './routers/sourceRouter.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -444,6 +446,8 @@ app.use(express.json());
 
 app.use('/api', userRouter);
 app.use('/api', mediaContentRouter);
+app.use('/api', tagRouter);
+app.use('/api', sourceRouter);
 
 app.use(errorHandler);
 
@@ -464,310 +468,340 @@ const start = () => {
 start();
 ```
 
-### Маршрути для User та MediaContent
+### Маршрути для Tag та Source
 ```js
 import express from 'express';
 import {
-  registerUser,
-  listUsers,
-  getUser,
-  updateUser,
-  removeUser,
-} from '../controllers/userController.js.js';
+  createTag,
+  listTags,
+  getTag,
+  updateTag,
+  removeTag,
+} from '../controllers/tagController.js';
 
-const userRouter = new express.Router();
+const tagRouter = new express.Router();
 
-userRouter.post('/user', registerUser);
-userRouter.get('/user', listUsers);
-userRouter.get('/user/:id', getUser);
-userRouter.patch('/user/:id', updateUser);
-userRouter.delete('/user/:id', removeUser);
+tagRouter.post('/tag', createTag);
+tagRouter.get('/tag', listTags);
+tagRouter.get('/tag/:id', getTag);
+tagRouter.patch('/tag/:id', updateTag);
+tagRouter.delete('/tag/:id', removeTag);
 
-export default userRouter;
+export default tagRouter;
 ```
 
 ```js
 import express from 'express';
 import {
-  createMediaContent,
-  getMediaContents,
-  getMediaContent,
-  updateMediaContent,
-  deleteMediaContent,
-} from '../controllers/mediaContentController.js';
+  createSource,
+  listSources,
+  getSource,
+  updateSource,
+  removeSource,
+} from '../controllers/sourceController.js';
 
-const mediaContentRouter = new express.Router();
+const sourceRouter = new express.Router();
 
-mediaContentRouter.post('/content', createMediaContent);
-mediaContentRouter.get('/content', getMediaContents);
-mediaContentRouter.get('/content/:id', getMediaContent);
-mediaContentRouter.patch('/content/:id', updateMediaContent);
-mediaContentRouter.delete('/content/:id', deleteMediaContent);
+sourceRouter.post('/source', createSource);
+sourceRouter.get('/source', listSources);
+sourceRouter.get('/source/:id', getSource);
+sourceRouter.patch('/source/:id', updateSource);
+sourceRouter.delete('/source/:id', removeSource);
 
-export default mediaContentRouter;
+export default sourceRouter;
 ```
 
-### Контролери для User
+### Контролери для Tag
 ```js
-import {
-  createProfile,
-  fetchAllProfiles,
-  findUserById,
-  updateProfileById,
-  deleteProfileById,
-  findUserByEmail,
-} from '../models/userModel.js';
-import AppError from '../utils/appError.js';
 import handleAsync from '../utils/handleAsync.js';
-import { validateRequiredFields } from '../utils/validator.js';
+import {
+  insertTag,
+  getAllTags,
+  getTagById,
+  updateTagById,
+  deleteTagById,
+} from '../models/tagModel.js';
+import AppError from '../utils/appError.js';
+import { validateRequiredTagFields } from '../utils/validator.js'; 
 
-export const registerUser = handleAsync(async (req, res) => {
-  const userData = req.body;
+export const createTag = handleAsync(async (req, res) => {
+  const tagData = req.body;
+  validateRequiredTagFields(tagData);
 
-  validateRequiredFields(userData);
-
-  const user = await findUserByEmail(userData.email);
-  if (user) {
-    throw new AppError('AlreadyRegisteredException', 400);
-  }
-
-  await createProfile(userData);
-  res
-    .status(201)
-    .json({ status: 'success', message: 'User registered successfully' });
+  const newTag = await insertTag(tagData);
+  res.status(201).json({ status: 'success', data: newTag });
 });
 
-export const listUsers = handleAsync(async (req, res) => {
-  const users = await fetchAllProfiles();
-  res.status(200).json({ status: 'success', message: users });
+export const listTags = handleAsync(async (req, res) => {
+  const tags = await getAllTags();
+  res.status(200).json({ status: 'success', results: tags.length, data: tags });
 });
 
-export const getUser = handleAsync(async (req, res) => {
+export const getTag = handleAsync(async (req, res) => {
   const { id } = req.params;
-  const user = await findUserById(id);
+  const tag = await getTagById(id);
 
-  if (!user) {
-    throw new AppError('UserNotFoundException', 404);
+  if (!tag) {
+    throw new AppError('TagNotFoundException: No tag found with that ID', 404);
   }
 
-  res.status(200).json({ status: 'success', message: user });
+  res.status(200).json({ status: 'success', data: tag });
 });
 
-export const updateUser = handleAsync(async (req, res) => {
+export const updateTag = handleAsync(async (req, res) => {
   const { id } = req.params;
-  const userData = req.body;
+  const tagData = req.body;
 
-  const user = await findUserById(id);
-
-  if (!user) {
-    throw new AppError('UserNotFoundException', 404);
+  if (Object.keys(tagData).length === 0) {
+    throw new AppError('NoFieldsToUpdateException: No fields provided for update.', 400);
   }
+  
+  const updatedTag = await updateTagById(id, tagData);
 
-  const updatedUser = await updateProfileById(id, userData);
-
+  if (!updatedTag) {
+    throw new AppError('TagNotFoundException: No tag found with that ID to update', 404);
+  }
   res.status(200).json({
     status: 'success',
-    message: 'User updated successfully',
-    updatedUser,
+    message: 'Tag updated successfully',
+    data: updatedTag,
   });
 });
 
-export const removeUser = handleAsync(async (req, res) => {
+export const removeTag = handleAsync(async (req, res) => {
   const { id } = req.params;
+  const deletedTag = await deleteTagById(id);
 
-  const user = await findUserById(id);
-
-  if (!user) {
-    throw new AppError('UserNotFoundException', 404);
+  if (!deletedTag) {
+    throw new AppError('TagNotFoundException: No tag found with that ID to delete', 404);
   }
 
-  await deleteProfileById(id);
-
-  res.status(200).json({ message: 'User deleted successfully' });
+  res.status(200).json({ status: 'success', message: 'Tag deleted successfully', data: null });
 });
 ```
 
-### Взаємодія з базою даних для User
+### Взаємодія з базою даних для Tag
 ```js
 import db from '../config/db.js';
+import AppError from '../utils/appError.js';
 
-export const createProfile = async (userData) => {
-  const { first_name, last_name, email, password } = userData;
-  const query = `INSERT INTO Profile (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)`;
-  return await db.query(query, [first_name, last_name, email, password]);
+export const insertTag = async (tagData) => {
+  const { name } = tagData;
+  const query = `
+    INSERT INTO Tag (name)
+    VALUES ($1)
+    RETURNING *;
+  `;
+  const values = [name];
+  try {
+    const result = await db.query(query, values);
+    return result.rows[0];
+  } catch (error) {
+    throw new AppError(`Error inserting tag: ${error.message}`, 500);
+  }
 };
 
-export const fetchAllProfiles = async () => {
-  const query = `SELECT * FROM Profile`;
-  const result = await db.query(query);
-  return result.rows;
+export const getAllTags = async () => {
+  const query = `SELECT * FROM Tag`;
+  try {
+    const result = await db.query(query);
+    return result.rows;
+  } catch (error) {
+    throw new AppError(`Error fetching all tags: ${error.message}`, 500);
+  }
 };
 
-export const findUserById = async (id) => {
-  const query = `SELECT * FROM Profile WHERE id = $1`;
-  const result = await db.query(query, [id]);
-  return result.rows[0];
+export const getTagById = async (id) => {
+  const query = `SELECT * FROM Tag WHERE id = $1`;
+  try {
+    const result = await db.query(query, [id]);
+    return result.rows[0] || null;
+  } catch (error) {
+    throw new AppError(`Error fetching tag by ID: ${error.message}`, 500);
+  }
 };
 
-export const updateProfileById = async (id, userData) => {
-  const fields = Object.keys(userData);
-  const values = Object.values(userData);
+export const updateTagById = async (id, tagData) => {
+  const fields = Object.keys(tagData);
+  const values = Object.values(tagData);
+
+  if (fields.length === 0) {
+    throw new AppError('NoFieldsToUpdateException: No fields provided for update.', 400);
+  }
 
   const setClause = fields
     .map((field, index) => `${field} = $${index + 1}`)
     .join(', ');
 
   const query = `
-        UPDATE Profile
-        SET ${setClause}
-        WHERE id = $${fields.length + 1}
-    RETURNING *;
-  `;
-
-  const result = await db.query(query, [...values, id]);
-  return result.rows[0];
-};
-
-export const deleteProfileById = async (id) => {
-  const query = `DELETE FROM profile WHERE id = $1`;
-  await db.query(query, [id]);
-};
-
-export const findUserByEmail = async (email) => {
-  const query = `SELECT * FROM Profile WHERE email = $1`;
-  const result = await db.query(query, [email]);
-  return result.rows[0];
-};
-```
-
-### Контролери для MediaContent
-```js
-import handleAsync from '../utils/handleAsync.js';
-import {
-  deleteMediaContentById,
-  getAllMediaContents,
-  getMediaContentById,
-  insertMediaContent,
-  updateMediaContentById,
-} from '../models/mediaContentModel.js';
-import { validateRequiredContentFields } from '../utils/validator.js';
-import AppError from '../utils/appError.js';
-
-export const createMediaContent = handleAsync(async (req, res) => {
-  const mediaContentData = req.body;
-
-  validateRequiredContentFields(mediaContentData);
-
-  await insertMediaContent(mediaContentData);
-
-  res.status(200).json({ status: 'success', message: mediaContentData });
-});
-
-export const getMediaContents = handleAsync(async (req, res) => {
-  const mediaContents = await getAllMediaContents();
-  res.status(200).json({ status: 'success', message: mediaContents });
-});
-
-export const getMediaContent = handleAsync(async (req, res) => {
-  const { id } = req.params;
-  const mediaContent = await getMediaContentById(id);
-
-  if (!mediaContent) {
-    throw new AppError('MediaContentNotFoundException', 404);
-  }
-
-  res.status(200).json({ status: 'success', message: mediaContent });
-});
-
-export const updateMediaContent = handleAsync(async (req, res) => {
-  const { id } = req.params;
-  const userData = req.body;
-
-  const mediaContent = await getMediaContentById(id);
-
-  if (!mediaContent) {
-    throw new AppError('MediaContentNotFoundException', 404);
-  }
-
-  const updatedMediaContent = await updateMediaContentById(id, userData);
-  res.status(200).json({ status: 'success', message: updatedMediaContent });
-});
-
-export const deleteMediaContent = handleAsync(async (req, res) => {
-  const { id } = req.params;
-
-  const deletedMediaContent = await deleteMediaContentById(id);
-
-  if (!deletedMediaContent) {
-    throw new AppError('MediaContentNotFoundException', 404);
-  }
-
-  res
-    .status(200)
-    .json({ status: 'success', message: 'Media Content Deleted Successfully' });
-});
-```
-
-### Взаємодія з базою даних для MediaContent
-```js
-import db from '../config/db.js';
-import AppError from '../utils/appError.js';
-
-export const insertMediaContent = async (contentData) => {
-  const query = `
-    INSERT INTO MediaContent (title, description, body, content_type, profile_id)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING *;
-  `;
-  const values = [
-    contentData.title,
-    contentData.description,
-    contentData.body,
-    contentData.content_type,
-    contentData.user_id,
-  ];
-  const result = await db.query(query, values);
-  return result.rows[0];
-};
-
-export const getAllMediaContents = async () => {
-  const query = `SELECT * FROM MediaContent`;
-  const result = await db.query(query);
-  return result.rows;
-};
-
-export const getMediaContentById = async (id) => {
-  const query = `SELECT * FROM MediaContent WHERE id = $1`;
-  const result = await db.query(query, [id]);
-  return result.rows[0] || null;
-};
-
-export const updateMediaContentById = async (id, contentData) => {
-  const fields = Object.keys(contentData);
-  const values = Object.values(contentData);
-
-  if (!fields.length) {
-    throw new AppError('NoFieldsToUpdateException', 400);
-  }
-
-  const setClause = fields
-    .map((field, index) => `${field} = $${index + 1}`)
-    .join(', ');
-  const query = `
-      UPDATE MediaContent
+      UPDATE Tag
       SET ${setClause}
       WHERE id = $${fields.length + 1}
     RETURNING *;
   `;
-
-  const result = await db.query(query, [...values, id]);
-  return result.rows[0];
+  try {
+    const result = await db.query(query, [...values, id]);
+    return result.rows[0];
+  } catch (error) {
+    throw new AppError(`Error updating tag: ${error.message}`, 500);
+  }
 };
 
-export const deleteMediaContentById = async (id) => {
-  const query = `DELETE FROM MediaContent WHERE id = $1 RETURNING *`;
-  const result = await db.query(query, [id]);
-  return result.rows[0] || null;
+export const deleteTagById = async (id) => {
+  const query = `DELETE FROM Tag WHERE id = $1 RETURNING *`;
+  try {
+    const result = await db.query(query, [id]);
+    return result.rows[0] || null; 
+  } catch (error) {
+    throw new AppError(`Error deleting tag: ${error.message}`, 500);
+  }
+};
+```
+
+### Контролери для Source
+```js
+import handleAsync from '../utils/handleAsync.js';
+import {
+  insertSource,
+  getAllSources,
+  getSourceById,
+  updateSourceById,
+  deleteSourceById,
+} from '../models/sourceModel.js';
+import AppError from '../utils/appError.js';
+import { validateRequiredSourceFields } from '../utils/validator.js';
+
+export const createSource = handleAsync(async (req, res) => {
+  const sourceData = req.body;
+  validateRequiredSourceFields(sourceData);
+
+  const newSource = await insertSource(sourceData);
+  res.status(201).json({ status: 'success', data: newSource });
+});
+
+export const listSources = handleAsync(async (req, res) => {
+  const sources = await getAllSources();
+  res.status(200).json({ status: 'success', results: sources.length, data: sources });
+});
+
+export const getSource = handleAsync(async (req, res) => {
+  const { id } = req.params;
+  const source = await getSourceById(id);
+
+  if (!source) {
+    throw new AppError('SourceNotFoundException: No source found with that ID', 404);
+  }
+
+  res.status(200).json({ status: 'success', data: source });
+});
+
+export const updateSource = handleAsync(async (req, res) => {
+  const { id } = req.params;
+  const sourceData = req.body;
+
+  if (Object.keys(sourceData).length === 0) {
+    throw new AppError('NoFieldsToUpdateException: No fields provided for update.', 400);
+  }
+
+  const updatedSource = await updateSourceById(id, sourceData);
+
+  if (!updatedSource) {
+    throw new AppError('SourceNotFoundException: No source found with that ID to update', 404);
+  }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Source updated successfully',
+    data: updatedSource,
+  });
+});
+
+export const removeSource = handleAsync(async (req, res) => {
+  const { id } = req.params;
+  const deletedSource = await deleteSourceById(id);
+
+  if (!deletedSource) {
+    throw new AppError('SourceNotFoundException: No source found with that ID to delete', 404);
+  }
+
+  res.status(200).json({ status: 'success', message: 'Source deleted successfully', data: null });
+});
+```
+
+### Взаємодія з базою даних для Source
+```js
+import db from '../config/db.js';
+import AppError from '../utils/appError.js';
+
+export const insertSource = async (sourceData) => {
+  const { name, url } = sourceData;
+  const query = `
+    INSERT INTO Source (name, url)
+    VALUES ($1, $2)
+    RETURNING *;
+  `;
+  const values = [name, url];
+  try {
+    const result = await db.query(query, values);
+    return result.rows[0];
+  } catch (error) {
+    throw new AppError(`Error inserting source: ${error.message}`, 500);
+  }
+};
+
+export const getAllSources = async () => {
+  const query = `SELECT * FROM Source`;
+  try {
+    const result = await db.query(query);
+    return result.rows;
+  } catch (error) {
+    throw new AppError(`Error fetching all sources: ${error.message}`, 500);
+  }
+};
+
+export const getSourceById = async (id) => {
+  const query = `SELECT * FROM Source WHERE id = $1`;
+  try {
+    const result = await db.query(query, [id]);
+    return result.rows[0] || null;
+  } catch (error) {
+    throw new AppError(`Error fetching source by ID: ${error.message}`, 500);
+  }
+};
+
+export const updateSourceById = async (id, sourceData) => {
+  const fields = Object.keys(sourceData);
+  const values = Object.values(sourceData);
+
+  if (fields.length === 0) {
+    throw new AppError('NoFieldsToUpdateException: No fields provided for update.', 400);
+  }
+
+  const setClause = fields
+    .map((field, index) => `${field} = $${index + 1}`)
+    .join(', ');
+  const query = `
+      UPDATE Source
+      SET ${setClause}
+      WHERE id = $${fields.length + 1}
+    RETURNING *;
+  `;
+  try {
+    const result = await db.query(query, [...values, id]);
+    return result.rows[0];
+  } catch (error) {
+    throw new AppError(`Error updating source: ${error.message}`, 500);
+  }
+};
+
+export const deleteSourceById = async (id) => {
+  const query = `DELETE FROM Source WHERE id = $1 RETURNING *`;
+  try {
+    const result = await db.query(query, [id]);
+    return result.rows[0] || null; 
+  } catch (error) {
+    throw new AppError(`Error deleting source: ${error.message}`, 500);
+  }
 };
 ```
 
